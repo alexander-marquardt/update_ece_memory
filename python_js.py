@@ -14,12 +14,12 @@ ECE_URL="https://ECE_endpoint:12443"
 
 # Set the memory for each component based on recommendations at
 # https://www.elastic.co/guide/en/cloud-enterprise/current/ece-topology-example3.html
-COMPONENTS= (("allocators", "allocator", "ALLOCATOR_MEMORY_OPTIONS", "1024M"),
-             ("zookeeper-servers", "zookeeper", "ZOOKEEPER_MEMORY_OPTIONS", "4096M"),
-             ("proxies", "proxy", "PROXY_MEMORY_OPTIONS", "8192M"),
-             ("directors", "director", "DIRECTOR_MEMORY_OPTIONS", "1024M"),
-             ("constructors", "constructor", "CONSTRUCTOR_MEMORY_OPTIONS", "4096M"),
-             ("admin-consoles", "admin-console", "ADMINCONSOLE_MEMORY_OPTIONS", "4096M"))
+COMPONENTS= (("allocators", "allocator", "ALLOCATOR_MEMORY_OPTIONS", "1023M"),
+             ("zookeeper-servers", "zookeeper", "ZOOKEEPER_MEMORY_OPTIONS", "4095M"),
+             ("proxies", "proxy", "PROXY_MEMORY_OPTIONS", "8191M"),
+             ("directors", "director", "DIRECTOR_MEMORY_OPTIONS", "1023M"),
+             ("constructors", "constructor", "CONSTRUCTOR_MEMORY_OPTIONS", "4095M"),
+             ("admin-consoles", "admin-console", "ADMINCONSOLE_MEMORY_OPTIONS", "4095M"))
 
 SIMULATE_ECE_RESPONSE_JSON_FILE="simulate_json_response.json"
 
@@ -62,8 +62,9 @@ def overwrite_memory_settings_in_sub_obj(sub_obj, memory_key, memory_value):
     env_array = sub_obj["container_config"]["Env"]
     memory_key_regex = memory_key + ".*"
     idx_of_memory_setting = [idx for idx, item in enumerate(env_array) if re.search(memory_key_regex, item)][0]
-    print "Overwriting %s" % env_array[idx_of_memory_setting]
+    print "Previous memory setting was %s" % env_array[idx_of_memory_setting]
     env_array[idx_of_memory_setting] = "{0}=-Xms{1} -Xmx{1}".format(memory_key, memory_value)
+    print "Setting memory to %s" % env_array[idx_of_memory_setting]
 
 
 def write_sub_obj_to_file(service_name, sub_obj):
@@ -84,9 +85,9 @@ def return_test_json():
     json_string = json.dumps(json_obj)
     return json_string, None
 
-def post_update_to_ece(endpoint_identifier, file_name):
-    curl_string = 'curl -s -XPOST -k -u "{0}:{1}" "{2}/api/v0/regions/ece-region/container-sets/{3}" -d @{4}'.format(
-        ADMIN, ADMIN_PWD, ECE_URL, endpoint_identifier, file_name)
+def post_update_to_ece(service_name, endpoint_identifier, file_name):
+    curl_string = 'curl -s -XPOST -k -u "{0}:{1}" "{2}/api/v0/regions/ece-region/container-sets/{3}/containers/{4}" -d @{5}'.format(
+        ADMIN, ADMIN_PWD, ECE_URL, service_name, endpoint_identifier, file_name)
     (ece_response, err) = execute_curl_command(curl_string)
     print "Server responded with: %s" % ece_response
 
@@ -106,7 +107,7 @@ def main():
             sub_obj = extract_sub_object_from_json_string(json_string=ece_response, sub_object_identifier=current_tuple[1])
             overwrite_memory_settings_in_sub_obj(sub_obj, memory_key=current_tuple[2], memory_value=current_tuple[3])
             file_name = write_sub_obj_to_file(service_name=current_tuple[0], sub_obj=sub_obj)
-            post_update_to_ece(endpoint_identifier=current_tuple[1], file_name=file_name)
+            post_update_to_ece(service_name=current_tuple[0], endpoint_identifier=current_tuple[1], file_name=file_name)
 
         else:
             print "Invalid json returned from server. Got ece_response=%s and err=%s" % (ece_response, err)
