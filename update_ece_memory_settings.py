@@ -6,7 +6,7 @@ import re
 
 # Set the following to False for "real" execution, otherwise this script will simulate a curl request by reading locally
 # stored json
-TEST_MODE=True
+TEST_MODE=False
 
 ADMIN="admin"
 ADMIN_PWD="XXXXX"
@@ -14,12 +14,12 @@ ECE_URL="https://ECE_endpoint:12443"
 
 # Set the memory for each component based on recommendations at
 # https://www.elastic.co/guide/en/cloud-enterprise/current/ece-topology-example3.html
-COMPONENTS= (("allocators", "allocator", "ALLOCATOR_MEMORY_OPTIONS", "1023M"),
-             ("zookeeper-servers", "zookeeper", "ZOOKEEPER_MEMORY_OPTIONS", "4095M"),
-             ("proxies", "proxy", "PROXY_MEMORY_OPTIONS", "8191M"),
-             ("directors", "director", "DIRECTOR_MEMORY_OPTIONS", "1023M"),
-             ("constructors", "constructor", "CONSTRUCTOR_MEMORY_OPTIONS", "4095M"),
-             ("admin-consoles", "admin-console", "ADMINCONSOLE_MEMORY_OPTIONS", "4095M"))
+COMPONENTS= (("allocators", "allocator", "ALLOCATOR_MEMORY_OPTIONS", "1024M"),
+             ("zookeeper-servers", "zookeeper", "ZOOKEEPER_MEMORY_OPTIONS", "4096M"),
+             ("proxies", "proxy", "PROXY_MEMORY_OPTIONS", "8192M"),
+             ("directors", "director", "DIRECTOR_MEMORY_OPTIONS", "1024M"),
+             ("constructors", "constructor", "CONSTRUCTOR_MEMORY_OPTIONS", "4096M"),
+             ("admin-consoles", "admin-console", "ADMINCONSOLE_MEMORY_OPTIONS", "4096M"))
 
 SIMULATE_ECE_RESPONSE_JSON_FILE="simulate_json_response.json"
 
