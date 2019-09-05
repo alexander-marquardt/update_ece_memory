@@ -1,3 +1,11 @@
+# This script has NOT BEEN TESTED, and is not complete.
+# Docker 18 reports "health" of each container,  but earlier versions may not -- if health is not reported
+# then this script will not work correctly.
+# Additionally, using "docker ps" is not a _nice_ way of gathering docker information.
+# This should be rewritten to use "docker inspect --format='{{json .State.Health}}' <container_name>"
+
+
+
 # script to be used for restarting ECE components
 import subprocess
 import re
